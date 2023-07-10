@@ -1,0 +1,80 @@
+#include <iostream>
+using namespace std;
+struct node {
+    int dest;
+    int depth;
+    node* next;
+};
+
+struct graph {
+    int numVertex;
+    node** adj;
+};
+
+void createGraph (graph* g, int numVertex) {
+    g->numVertex = numVertex;
+    g->adj = new node * [numVertex];
+    for (int i = 0; i < numVertex; ++i)
+          g->adj[i] = NULL;
+}
+
+void addEdge(graph* g, int src, int dest,int depth) {
+    node* n = new node;
+    n->dest = dest;
+    n->depth=depth;
+    n->next = g->adj[src];
+    g->adj[src] = n;
+}
+
+void printArray (int *arr, int level) {
+	for (int i = 0; i < level; ++i) {
+		cout<<arr[i]<<" ";
+	}
+	cout<<endl;
+}
+void dfsHelper (graph*& g, int start, int end, bool*& visited, int *& arr, int level, int&sum, int k, int&counter) {
+    visited[start] = true;
+    arr[level] = start;
+    level = level + 1;
+	if (((sum>k))) {
+		counter+=1;
+		printArray (arr, level);
+    }
+    node* current = g->adj[start];
+    while (current!= NULL) {
+          if (! visited[current->dest]) {
+	sum+=current->depth;
+dfsHelper (g, current->dest, end, visited, arr, level, sum, k, counter);
+          }
+          current = current->next;
+    }
+	visited[start] = false;
+	//sum=0;
+}
+void dfs (graph*& g, int start, int end, int k) {
+    bool* visited = new bool[g->numVertex];
+    int sum=0;
+    int counter=0;
+	int* arr = new int [g->numVertex];
+    for (int i = 0; i < g->numVertex; ++i) {
+        visited[i] = false;
+		arr[i] = 0;
+    }
+dfsHelper (g, start, end, visited, arr, 0, sum, k, counter);
+    cout<<"Number of paths longer than k: "<<counter<<endl;
+
+}
+int main() {
+    graph* g = new graph;
+    int k=40;
+    createGraph(g,7);
+addEdge (g, 0, 1,50);
+addEdge (g, 1,2,6);
+addEdge (g, 2,3,20);
+addEdge (g, 0,5,10);
+addEdge (g, 5,6,50);
+addEdge (g, 3,4,20);
+addEdge (g, 4,5,10);
+dfs (g,0,6, k);
+    return 0;
+}
